@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container text-center mt-4">
+        <div class="alert alert-primary" role="alert">
+            Welcome to News App </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="mb-3">
+                    <label for="topic" class="form-label">topic</label>
+                    <input type="text" class="form-control" placeholder="enter topic" id="topic">
+                  </div>
+                  <input type="button" value="fetch News" class="btn btn-success" onclick = "handleFetchNewsClick()"/>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="container">
+        <div class="row" id="news-container">
+
+        </div>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous">
+        </script>
+    <script>
+        function fetchNews(topic) {
+            let xhr = new XMLHttpRequest();
+            xhr.open('GET', `https://newsdata.io/api/1/news?apikey=pub_2869360fb000c42739038baf8e7639bd8aac6&country=in&category=${topic}`);
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    let data = JSON.parse(xhr.responseText);
+                    console.log(data.results);
+                    let newsContainer = document.getElementById('news-container');
+                    newsContainer.innerHTML = "";
+                    for (let i = 0; i < data.results.length; i++) {
+                        let col = document.createElement('div');
+                        col.setAttribute('class', 'col-lg-4 mt-4 mt-6');
+                        //col.innerHTML = data.results[i].title;
+                        let card = document.createElement('div');
+                        card.setAttribute('class', 'card');
+                        if (data.results[i].image_url) {
+                            let img = document.createElement('img');
+                            img.setAttribute('src', data.results[i].image_url);
+                            img.setAttribute('class', 'card-img-top');
+                            card.appendChild(img);
+                        };
+                        let cardBody =document.createElement('div');
+                        cardBody.setAttribute('class', 'card-body');
+                        let h5 = document.createElement('h5');
+                        cardBody.setAttribute('class', 'card-title');
+                        h5.innerHTML = data.results[i].title;
+                        let p = document.createElement('p');
+                        p.setAttribute('class', 'card-text');
+                        p.innerHTML = data.results[i].description;
+                        let a = document.createElement('a');
+                            a.setAttribute('class', 'card-link');
+                            a.target = '_blank';
+                            a.href = data.results[i].link;
+
+                        cardBody.appendChild(h5);
+                        cardBody.appendChild(p);
+                        cardBody.appendChild(a);
+                        card.appendChild(cardBody);
+                        col.appendChild(card);
+                        newsContainer.appendChild(col);
+                    }
+                }
+            }
+            xhr.send();
+        }
+        fetchNews('entertainment');
+        function handleFetchNewsClick(){
+            let inputFiled = document.getElementById('topic');
+            fetchNews(inputFiled.value);
+        }
+    </script>
+</body>
+
+</html>
